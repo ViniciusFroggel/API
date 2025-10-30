@@ -1,0 +1,45 @@
+# Visual Studio
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build
+bin/
+obj/
+Debug/
+Release/
+out/
+
+# Docker
+*.dockerignore
+docker-compose*
+Dockerfile*
+
+# Logs
+*.log
+
+# Secrets
+appsettings.json
+appsettings.Development.json
+secrets.json
+*.env
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# .NET generated files
+*.dll
+*.pdb
+*.exe
+*.cache
+*.config
+*.lock.json
+
+# Windows
+Thumbs.db
+Desktop.ini

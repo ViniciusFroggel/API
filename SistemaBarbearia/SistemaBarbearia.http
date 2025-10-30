@@ -1,0 +1,6 @@
+@SistemaBarbearia_HostAddress = http://localhost:5107
+
+GET {{SistemaBarbearia_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
