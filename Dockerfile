@@ -2,21 +2,21 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copiar solução
+# Copiar a solução
 COPY *.sln ./
 
-# Criar pasta para os projetos e copiar csproj
+# Criar diretório para os projetos
 RUN mkdir SistemaBarbearia
-COPY *.csproj ./SistemaBarbearia/
+COPY SistemaBarbearia/*.csproj ./SistemaBarbearia/
 
 # Restaurar dependências
 WORKDIR /src/SistemaBarbearia
 RUN dotnet restore
 
 # Copiar todo o restante do código
-COPY . ./
+COPY SistemaBarbearia/. ./
 
-# Publicar em Release
+# Publicar
 RUN dotnet publish -c Release -o /app
 
 # ---- Runtime Stage ----
