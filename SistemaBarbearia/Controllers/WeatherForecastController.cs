@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SistemaBarbearia.Models;
 
 namespace SistemaBarbearia.Controllers
 {
