@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copiar solução e projeto
 COPY *.sln ./
-COPY *.csproj ./
+COPY SistemaBarbearia/*.csproj ./SistemaBarbearia/
 
 # Restaurar dependências
 RUN dotnet restore
@@ -12,7 +12,7 @@ RUN dotnet restore
 # Copiar todo o restante do código
 COPY . ./
 
-# Publicar aplicação
+# Publicar
 RUN dotnet publish -c Release -o /app/publish
 
 # Stage 2: Runtime
