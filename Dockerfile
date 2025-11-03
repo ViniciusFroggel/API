@@ -1,20 +1,19 @@
-# Build com .NET 8 SDK
+# Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copiar csproj e restaurar dependências
-COPY *.sln .
-COPY SistemaBarbearia/*.csproj ./SistemaBarbearia/
+# Copiar apenas o .sln e o csproj(s)
+COPY *.sln ./
+COPY *.csproj ./   # <- alterado para copiar diretamente da raiz
 RUN dotnet restore
 
-# Copiar tudo e build
-COPY . .
-WORKDIR /src/SistemaBarbearia
-RUN dotnet publish -c Release -o /app/publish
+# Copiar tudo e buildar
+COPY . ./
+WORKDIR /src
+RUN dotnet publish -c Release -o /app
 
-# Runtime com .NET 8 ASP.NET
+# Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=build /app/publish .
-EXPOSE 5000
+COPY --from=build /app ./
 ENTRYPOINT ["dotnet", "SistemaBarbearia.dll"]
