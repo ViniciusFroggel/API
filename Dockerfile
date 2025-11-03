@@ -5,16 +5,15 @@ WORKDIR /src
 # Copiar a solução
 COPY *.sln ./
 
-# Criar diretório para os projetos
-RUN mkdir SistemaBarbearia
+# Copiar o projeto SistemaBarbearia
 COPY SistemaBarbearia/*.csproj ./SistemaBarbearia/
 
 # Restaurar dependências
 WORKDIR /src/SistemaBarbearia
 RUN dotnet restore
 
-# Copiar todo o restante do código
-COPY SistemaBarbearia/. ./
+# Copiar todo o código do projeto
+COPY SistemaBarbearia/. ./  
 
 # Publicar
 RUN dotnet publish -c Release -o /app
