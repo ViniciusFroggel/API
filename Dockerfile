@@ -1,26 +1,28 @@
-# ---- Build Stage ----
+# Stage 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copiar a solução
+# Copiar apenas a solução e o csproj
 COPY *.sln ./
-
-# Copiar o projeto SistemaBarbearia
-COPY SistemaBarbearia/*.csproj ./SistemaBarbearia/
+COPY *.csproj ./
 
 # Restaurar dependências
-WORKDIR /src/SistemaBarbearia
 RUN dotnet restore
 
-# Copiar todo o código do projeto
-COPY SistemaBarbearia/. ./  
+# Copiar todo o resto do código
+COPY . ./
 
-# Publicar
-RUN dotnet publish -c Release -o /app
+# Publicar a aplicação
+RUN dotnet publish -c Release -o /app/publish
 
-# ---- Runtime Stage ----
+# Stage 2: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=build /app ./
+COPY --from=build /app/publish .
 
+# Expõe a porta padrão
+EXPOSE 5000
+EXPOSE 5001
+
+# Comando para rodar a aplicação
 ENTRYPOINT ["dotnet", "SistemaBarbearia.dll"]
