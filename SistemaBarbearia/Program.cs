@@ -9,17 +9,17 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// -------------------- Configuration --------------------
+builder.Configuration
+       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+       .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+       .AddEnvironmentVariables(); // permite sobrescrever configs via ENV
+
 // -------------------- Database --------------------
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
-    var dbName = Environment.GetEnvironmentVariable("DB_NAME");
-    var dbUser = Environment.GetEnvironmentVariable("DB_USER");
-    var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
-    var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "5432";
-    var dbSSL = Environment.GetEnvironmentVariable("DB_SSL") ?? "true";
-
-    var connStr = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword};SSL Mode={(dbSSL.ToLower() == "true" ? "Require" : "Disable")};Trust Server Certificate=true;";
+    // Usa a string de conexão do appsettings ou ENV
+    var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
     options.UseNpgsql(connStr);
 });
 
@@ -39,8 +39,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 // -------------------- JWT Authentication --------------------
-var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")!;
-var key = Encoding.UTF8.GetBytes(jwtKey);
+var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -57,8 +56,8 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
-        ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(key)
     };
 });
@@ -131,9 +130,12 @@ using (var scope = app.Services.CreateScope())
             await roleManager.CreateAsync(new IdentityRole(role));
     }
 
-    // Criar AdminMaster via ENV
-    var adminPhone = Environment.GetEnvironmentVariable("ADMIN_PHONE") ?? "41998431178";
-    var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD") ?? "Master123!";
+    // Ler ADMIN_PHONE e ADMIN_PASSWORD das variáveis de ambiente
+    var adminPhone = Environment.GetEnvironmentVariable("ADMIN_PHONE");
+    var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD");
+
+    if (string.IsNullOrWhiteSpace(adminPhone) || string.IsNullOrWhiteSpace(adminPassword))
+        throw new Exception("Variáveis de ambiente ADMIN_PHONE ou ADMIN_PASSWORD não estão definidas!");
 
     var masterUser = await userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber == adminPhone);
 
@@ -153,6 +155,10 @@ using (var scope = app.Services.CreateScope())
         if (result.Succeeded)
         {
             await userManager.AddToRoleAsync(masterUser, UserRoles.AdminMaster);
+        }
+        else
+        {
+            throw new Exception("Falha ao criar AdminMaster: " + string.Join(", ", result.Errors.Select(e => e.Description)));
         }
     }
 }
