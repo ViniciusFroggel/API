@@ -11,15 +11,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 // -------------------- Configuration --------------------
 builder.Configuration
-       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true) // Mantemos obrigatório
        .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-       .AddEnvironmentVariables(); // permite sobrescrever configs via ENV
+       .AddEnvironmentVariables(); // Permite sobrescrever configs via ENV
 
 // -------------------- Database --------------------
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    // Usa a string de conexão do appsettings ou ENV
-    var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
+    var connStr = builder.Configuration.GetConnectionString("DefaultConnection")
+                  ?? Environment.GetEnvironmentVariable("DB_CONNECTION")
+                  ?? throw new InvalidOperationException("Connection string não definida.");
     options.UseNpgsql(connStr);
 });
 
@@ -48,7 +49,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = true; // obrigatório HTTPS em produção
+    options.RequireHttpsMetadata = true;
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -104,6 +105,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// -------------------- Middleware --------------------
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseAuthentication();
@@ -131,11 +133,13 @@ using (var scope = app.Services.CreateScope())
     }
 
     // Ler ADMIN_PHONE e ADMIN_PASSWORD das variáveis de ambiente
-    var adminPhone = Environment.GetEnvironmentVariable("ADMIN_PHONE");
-    var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD");
+    var adminPhone = Environment.GetEnvironmentVariable("ADMIN_PHONE")
+                     ?? builder.Configuration["Admin:Phone"];
+    var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD")
+                        ?? builder.Configuration["Admin:Password"];
 
     if (string.IsNullOrWhiteSpace(adminPhone) || string.IsNullOrWhiteSpace(adminPassword))
-        throw new Exception("Variáveis de ambiente ADMIN_PHONE ou ADMIN_PASSWORD não estão definidas!");
+        throw new Exception("ADMIN_PHONE ou ADMIN_PASSWORD não definidos!");
 
     var masterUser = await userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber == adminPhone);
 
