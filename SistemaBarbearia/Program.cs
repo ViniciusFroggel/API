@@ -8,12 +8,12 @@ using SistemaBarbearia.Enums;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// -------------------- Configuration --------------------
 builder.Configuration
-       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true) // Mantemos obrigatório
-       .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-       .AddEnvironmentVariables(); // Permite sobrescrever configs via ENV
+       .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+       .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+       .AddEnvironmentVariables();
+;
+; // Permite sobrescrever configs via ENV
 
 // -------------------- Database --------------------
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
