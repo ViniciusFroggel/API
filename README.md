@@ -35,7 +35,7 @@ C#	Linguagem da aplicação
 
 Visual Studio 2022 (ou VS Code)
 
-.NET 8.0 SDK (ou aquilo que o projeto usa)
+.NET 8.0 SDK 
 
 SQL Server (LocalDB ou Express)
 
