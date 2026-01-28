@@ -28,16 +28,6 @@ Swagger (Swashbuckle)	Documentação e interface de teste da API
 
 C#	Linguagem da aplicação
 
-📁 Estrutura do Projeto
-📦 API
- ┗ 📂 SistemaBarbearia
-    ┣ Controllers/
-    ┣ Data/
-    ┣ Models/
-    ┣ Program.cs
-    ┣ SistemaBarbearia.csproj
-    ┗ … (outros arquivos)
-
 🚀 Como Rodar o Projeto Localmente
 1️⃣ Pré-requisitos
 
