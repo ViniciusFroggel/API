@@ -28,7 +28,9 @@ Swagger (Swashbuckle)	Documentação e interface de teste da API
 
 C#	Linguagem da aplicação
 
+
 🚀 Como Rodar o Projeto Localmente
+
 1️⃣ Pré-requisitos
 
 Visual Studio 2022 (ou VS Code)
