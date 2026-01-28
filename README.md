@@ -13,7 +13,6 @@ Registro de clientes, serviços e agendamentos
 Documentação interativa com Swagger para testar facilmente os endpoints
 
 🧰 Tecnologias Utilizadas
-Tecnologia	Finalidade
 
 ASP.NET Core	Framework da API
 
