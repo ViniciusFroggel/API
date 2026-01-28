@@ -1,6 +1,6 @@
 Projeto
 
-Este projeto é uma API REST para gerenciamento de uma barbearia, criada com foco em autenticação via JWT, roles (Funcionário / Cliente), e documentação via Swagger.
+Este projeto é uma API REST para gerenciamento de uma barbearia, criada com foco em autenticação via JWT, roles (Funcionário / Cliente), Documentado via Swagger.
 
 A aplicação está estruturada para permitir:
 
